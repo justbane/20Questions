@@ -1,9 +1,8 @@
 import Vue from 'vue'
 import App from './App.vue'
 import VueRouter from 'vue-router'
-import * as firebase from "firebase";
-
-// Import the Routes
+import firebase from "firebase";
+import store from "./store";
 import { routes } from './routes.js';
 
 Vue.config.productionTip = false;
@@ -24,14 +23,48 @@ firebase.initializeApp(configOptions);
 // Global VueRouter
 Vue.use(VueRouter);
 const router = new VueRouter({ routes });
-// Global beforeEach route
-router.beforeEach((to, from, next) => {
-    console.log('global before each');
-    next();
+
+// On auth change, manage store and routing
+firebase.auth().onAuthStateChanged(user => {
+    store.dispatch('fetchUser', user);
+    // Check/create a user on login
+    firebase.database().ref('users').orderByChild('email').equalTo(user.email).once("value", function (snapshot) {
+        if (snapshot.val() == null) {
+            // create a user
+            var newUser = firebase.database().ref('users').push({
+                name: user.displayName,
+                email: user.email,
+                profile_picture: user.providerData[0].photoURL
+            }).key;
+            store.dispatch('setFirebaseId', newUser);
+        } else {
+            var userId = Object.keys(snapshot.val())[0];
+            store.dispatch('setFirebaseId', userId);
+        }
+    });
+    
+});
+firebase.getCurrentUser = () => {
+    return new Promise((resolve, reject) => {
+        const unsubscribe = firebase.auth().onAuthStateChanged(user => {
+            unsubscribe();
+            resolve(user);
+        }, reject);
+    })
+};
+// Route when ready
+router.beforeEach(async (to, from, next) => {
+    const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
+    if (requiresAuth && !await firebase.getCurrentUser()) {
+        next('/');
+    } else {
+        next();
+    }
 });
 
 // Vue mount
 new Vue({
   render: h => h(App),
-  router
+  router,
+  store
 }).$mount('#app')
