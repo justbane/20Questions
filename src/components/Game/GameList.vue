@@ -47,20 +47,23 @@ export default {
     },
     mounted() {
         // Get the ganes list
-        var v = this;
-        firebase.database().ref('games').orderByChild('userId').equalTo(this.$store.state.user.firebaseId).on('value', function(snapshot) {
-            v.games = [];
-            snapshot.forEach(function(game) {
-                v.games.push({
-                    id: game.key, 
-                    name: game.val().name,
-                    created: game.val().created
-                });
-            });
-            v.sortGames();
-        });
+        this.getGames();
     },
     methods: {
+        getGames() {
+            var v = this;
+            firebase.database().ref('games').orderByChild('userId').equalTo(this.$store.state.user.firebaseId).on('value', function(snapshot) {
+                v.games = [];
+                snapshot.forEach(function(game) {
+                    v.games.push({
+                        id: game.key, 
+                        name: game.val().name,
+                        created: game.val().created
+                    });
+                });
+                v.sortGames();
+            });
+        },
         createGame() {
             firebase.database().ref('games').push({
                 name: this.gameName,
