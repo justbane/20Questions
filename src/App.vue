@@ -17,9 +17,6 @@
                         <li class="nav-item">
                             <router-link to="/games" tag="a" active-class="active" exact class="flex-sm-fill text-sm-center nav-link">Games</router-link>
                         </li>  
-                        <li class="nav-item">
-                            <router-link to="/game" tag="a" active-class="active" exact class="flex-sm-fill text-sm-center nav-link">New Game</router-link>
-                        </li>
                     </ul>
                 </div>
             </div>

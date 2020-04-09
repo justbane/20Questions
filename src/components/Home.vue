@@ -10,7 +10,6 @@
                 <button v-if="!user.loggedIn" @click="login" class="btn neo"><i class="fab fa-google mr-2"></i>Login</button>
                 <button v-if="user.loggedIn" @click="logout" class="btn neo"><i class="fab fa-google mr-2"></i>Logout</button>
             </div>
-            <div class="col">{{ user }}</div>
         </div>
     </div>
 </template>

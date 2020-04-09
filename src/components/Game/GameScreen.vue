@@ -1,54 +1,98 @@
 <template>
     <div id="GameScene" class="container w-80">
-        <div class="row>"><div class="title w-100 mb-5"><h1>{{ title }}</h1></div></div>
-        <div v-if="gameId" class="row">
-            <QuestionsAnswers></QuestionsAnswers>
-            <div class="w-100 mt-5 mb-5"></div>
-            <Chat></Chat>
+        <div class="row>">
+            <div class="title w-100 mb-5">
+                <h1>20 Questions</h1>
+            </div>
         </div>
-        <div v-else class="row">
-            <div class="col"></div>
-            <div class="w-100 mt-5 mb-5"></div>
-            <div class="col">
-                <div class="input-group mb-3 neo">
-                    <div class="input-group-prepend imput-group-append">
-                        <span class="input-group-text">Game Name:</span>
-                    </div>
-                    <input v-model="gameName" type="text" class="form-control" id="basic-url" aria-describedby="Inout the game name.">
-                    <button type="button" class="btn">Go</button>
+        <div v-if="id" class="row">
+            <QuestionsAnswers :questions="questions" @add-question="addQs"></QuestionsAnswers>
+            <div class="col-sm-4 stats">
+                <div class="w-100 h-100 p-3 neo">
+                    <h2>12</h2>
+                    <p>Questions remaining</p>
                 </div>
             </div>
+        </div>
+        <div v-else class="row">
+            <p><strong>Oops!</strong> Looks like this game is no longer available.. or never existed.</p>
         </div>
     </div>
 </template>
 
 <script>
 import QuestionsAnswers from './QuestionsAnswers.vue'
-import Chat from './Chat.vue'
+import firebase from 'firebase'
 
 export default {
-  name: 'GameScreen',
-  data() {
-      return {
-          gameId: '',
-          gameName: ''
-      }
-  },
-  props: {
-    title: String
-  },
-  components: {
-      QuestionsAnswers,
-      Chat
-  }
+    name: 'GameScreen',
+    data() {
+        return {
+            gameName: '',
+            gameOwner: '',
+            gameOwnerId: null,
+            questions: []
+        }
+    },
+    props: {
+        id: {
+            type: String,
+            required: true
+        }
+    },
+    components: {
+        QuestionsAnswers,
+    },
+    mounted() {
+        var v = this;
+        // Get our game data
+        firebase.database().ref('games/' + this.id).once('value').then(function(snapshot) {
+            v.gameName = snapshot.val().name;
+            v.gameOwnerId = snapshot.val().userId;
+            v.getOwnerData();
+            v.getQs();
+        });
+    },
+    methods: {
+        getOwnerData() {
+            var v = this;
+            // Get the owner data
+            firebase.database().ref('users/' + v.gameOwnerId).once('value').then(function(snapshot) {
+                v.gameOwner = snapshot.val().name;
+            });
+        },
+        getQs() {
+            var v = this;
+            // Get the owner data
+            firebase.database().ref('games/' + this.id + '/questions').on('value', function(snapshot) {
+                v.questions = [];
+                snapshot.forEach(function(question) {
+                    v.questions.push({
+                        id: question.key, 
+                        text: question.val().text,
+                        type: question.val().type,
+                        status: question.val().status,
+                        created: question.val().created,
+                        ownerId: question.val().owner
+                    });
+                });
+            });
+        },
+        addQs(question) {
+            // Get the owner data
+            firebase.database().ref('games/' + this.id + '/questions').push({
+                text: question.text,
+                type: question.type,
+                status: question.status,
+                ownerId: this.$store.state.user.firebaseId,
+                created: Date.now()
+            });
+        }
+    }
 }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="less" scoped>
-    #GameScene {
-        .title {
-            color: red;
-        }
-    }
+
 </style>

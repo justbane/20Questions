@@ -11,19 +11,22 @@
         <div class="row">
             <div v-if="showGameForm" class="col w-100 text-center">
                 <div class="input-group mb-3 neo">
-                    <div class="input-group-prepend imput-group-append">
+                    <div class="input-group-prepend input-group-append">
                         <span class="input-group-text">Game Name:</span>
                     </div>
                     <input v-model="gameName" type="text" class="form-control" id="basic-url" aria-describedby="Inout the game name.">
-                    <button @click="createGame" type="button" class="btn btn-outline-success">Go</button>
-                    <button @click="showGameForm = false" type="button" class="btn btn-outline-danger">Cancel</button>
+                    <div class="input-group-append">
+                        <button @click="createGame" type="button" class="btn btn-outline-success">Go</button>
+                        <button @click="showGameForm = false" type="button" class="btn btn-outline-danger">Cancel</button>
+                    </div>
+                    
                 </div>
             </div> 
             <div v-else class="col w-100 text-center">
                 <ul id="gameList">  
                     <li v-for="game in games" :key="game.id" class="listItem neo">
-                        <button class="btn btn-outline-secondary btn-lg btn-block">{{ game.name }}</button>
-                        <button @click="deleteGame(game)" class="btn btn-outline-danger btn-lg">Delete</button>
+                        <router-link :to="`/game/${game.id}`" tag="button"  class="btn btn-outline-secondary btn-lg btn-block mr-2">{{ game.name }}</router-link>
+                        <a @click="deleteGame(game)" class="btn btn-danger btn-lg text-white"><i class="fas fa-trash-alt"></i></a>
                     </li>   
                 </ul>
             </div>

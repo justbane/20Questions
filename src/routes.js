@@ -18,12 +18,13 @@ export const routes = [
         }
     },
     { 
-        path: '/game', 
+        path: '/game/:id', 
         name: 'game', 
         component: GameScreen, 
         meta: {
             requiresAuth: true
-        }
+        },
+        props: true
     },
     { path: "*", component: PageNotFound }
 ]
