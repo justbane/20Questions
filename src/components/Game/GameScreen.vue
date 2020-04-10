@@ -6,10 +6,10 @@
             </div>
         </div>
         <div v-if="id" class="row">
-            <QuestionsAnswers :questions="questions" @add-question="addQs"></QuestionsAnswers>
+            <QuestionsAnswers :game="{gameData: game, gameId: id }" @add-question="addQs"></QuestionsAnswers>
             <div class="col-sm-4 stats">
                 <div class="w-100 h-100 p-3 neo">
-                    <h2>12</h2>
+                    <h2>##</h2>
                     <p>Questions remaining</p>
                 </div>
             </div>
@@ -21,17 +21,19 @@
 </template>
 
 <script>
-import QuestionsAnswers from './QuestionsAnswers.vue'
-import firebase from 'firebase'
+import QuestionsAnswers from './QuestionsAnswers.vue';
+import firebase from 'firebase';
 
 export default {
     name: 'GameScreen',
     data() {
         return {
             gameName: '',
-            gameOwner: '',
-            gameOwnerId: null,
-            questions: []
+            game: {
+                gameOwner: '',
+                gameOwnerId: null,
+                questions: []
+            }
         }
     },
     props: {
@@ -44,30 +46,30 @@ export default {
         QuestionsAnswers,
     },
     mounted() {
-        var v = this;
+        var self = this;
         // Get our game data
         firebase.database().ref('games/' + this.id).once('value').then(function(snapshot) {
-            v.gameName = snapshot.val().name;
-            v.gameOwnerId = snapshot.val().userId;
-            v.getOwnerData();
-            v.getQs();
+            self.gameName = snapshot.val().name;
+            self.game.gameOwnerId = snapshot.val().userId;
+            self.getOwnerData();
+            self.getQs();
         });
     },
     methods: {
         getOwnerData() {
-            var v = this;
+            var self = this;
             // Get the owner data
-            firebase.database().ref('users/' + v.gameOwnerId).once('value').then(function(snapshot) {
-                v.gameOwner = snapshot.val().name;
+            firebase.database().ref('users/' + self.game.gameOwnerId).once('value').then(function(snapshot) {
+                self.game.gameOwner = snapshot.val().name;
             });
         },
         getQs() {
-            var v = this;
+            var self = this;
             // Get the owner data
             firebase.database().ref('games/' + this.id + '/questions').on('value', function(snapshot) {
-                v.questions = [];
+                self.game.questions = [];
                 snapshot.forEach(function(question) {
-                    v.questions.push({
+                    self.game.questions.push({
                         id: question.key, 
                         text: question.val().text,
                         type: question.val().type,

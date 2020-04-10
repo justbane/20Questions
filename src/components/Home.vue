@@ -32,12 +32,13 @@ export default {
     },
     methods: {
         login() {
-            var v = this;
+            var self = this;
             var provider = new firebase.auth.GoogleAuthProvider();
             firebase.auth().signInWithPopup(provider).then(function() {
-                v.$router.replace({
+                self.$router.replace({
                     path: '/games'
                 }).catch( () => {});
+                
             }).catch(function(error) {
                 // Handle Errors.
                 console.log(error);

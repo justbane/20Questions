@@ -1,6 +1,7 @@
-import Vue from 'vue'
-import App from './App.vue'
-import VueRouter from 'vue-router'
+import Vue from 'vue';
+import App from './App.vue';
+import VueRouter from 'vue-router';
+import Vuelidate from 'vuelidate';
 import firebase from "firebase";
 import store from "./store";
 import { routes } from './routes.js';
@@ -27,22 +28,26 @@ const router = new VueRouter({ routes });
 // On auth change, manage store and routing
 firebase.auth().onAuthStateChanged(user => {
     store.dispatch('fetchUser', user);
-    // Check/create a user on login
-    firebase.database().ref('users').orderByChild('email').equalTo(user.email).once("value", function (snapshot) {
-        if (snapshot.val() == null) {
-            // create a user
-            var newUser = firebase.database().ref('users').push({
-                name: user.displayName,
-                email: user.email,
-                profile_picture: user.providerData[0].photoURL
-            }).key;
-            store.dispatch('setFirebaseId', newUser);
-        } else {
-            var userId = Object.keys(snapshot.val())[0];
-            store.dispatch('setFirebaseId', userId);
-        }
-    });
-    
+    // Check a user on login
+    try {
+        firebase.database().ref('users').orderByChild('email').equalTo(user.email).once("value", function (snapshot) {
+            if (snapshot.val() == null) {
+                // create a user
+                var newUser = firebase.database().ref('users').push({
+                    name: user.displayName,
+                    email: user.email,
+                    profile_picture: user.providerData[0].photoURL
+                }).key;
+                store.dispatch('setFirebaseId', newUser);
+            } else {
+                var userId = Object.keys(snapshot.val())[0];
+                store.dispatch('setFirebaseId', userId);
+            }
+        });
+    } catch (error) {
+        console.log("Not logged in");
+    }
+
 });
 firebase.getCurrentUser = () => {
     return new Promise((resolve, reject) => {
@@ -54,13 +59,23 @@ firebase.getCurrentUser = () => {
 };
 // Route when ready
 router.beforeEach(async (to, from, next) => {
+    var user = await firebase.getCurrentUser();
+    
+    //Where were they going
+    var prevRoute = to.params.id;
+    if (prevRoute) {
+        store.dispatch('setPrevRoute', prevRoute);
+    }
+
     const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
-    if (requiresAuth && !await firebase.getCurrentUser()) {
+    if (requiresAuth && !user) {
         next('/');
     } else {
         next();
     }
 });
+
+Vue.use(Vuelidate);
 
 // Vue mount
 new Vue({
