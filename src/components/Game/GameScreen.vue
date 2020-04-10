@@ -75,18 +75,22 @@ export default {
                         type: question.val().type,
                         status: question.val().status,
                         created: question.val().created,
-                        ownerId: question.val().owner
+                        ownerId: question.val().owner,
+                        ownerName: question.val().ownerName
                     });
                 });
             });
         },
         addQs(question) {
             // Get the owner data
+            console.log(this.$store.state.user.data);
+            
             firebase.database().ref('games/' + this.id + '/questions').push({
                 text: question.text,
                 type: question.type,
                 status: question.status,
-                ownerId: this.$store.state.user.firebaseId,
+                ownerId: question.ownerId,
+                ownerName: question.ownerName,
                 created: Date.now()
             });
         }
