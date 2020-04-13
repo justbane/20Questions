@@ -65,9 +65,6 @@ export default {
         color: #2c3e50;
         margin:15px auto 0 auto;
         max-width: 1024px;
-        .row {
-            margin-bottom: 30px;
-        }
 
         .neo {
             border-radius: 5px;

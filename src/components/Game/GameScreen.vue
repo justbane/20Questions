@@ -6,11 +6,15 @@
             </div>
         </div>
         <div v-if="id" class="row">
-            <QuestionsAnswers :game="{gameData: game, gameId: id }" @add-question="addQs"></QuestionsAnswers>
+            <QuestionsAnswers :game="{gameData: game, gameId: id }" @add-question="addQs" @game-solved="gameSolved"></QuestionsAnswers>
             <div class="col-sm-4 stats">
                 <div class="w-100 h-100 p-3 neo">
-                    <h2>##</h2>
-                    <p>Questions remaining</p>
+                    <div v-bind:class="countClass" class="btn btn-lg p-3 mb-2" style="font-size: 3em; line-height: 1em;">{{ count }}</div>
+                    <div v-if="game.status == 'solved'">
+                        <h4>SOLVED!</h4>
+                        <h3>{{ game.winnerName }} WINS!!</h3>
+                    </div>
+                    <h4 v-else >Questions remaining</h4>
                 </div>
             </div>
         </div>
@@ -32,7 +36,31 @@ export default {
             game: {
                 gameOwner: '',
                 gameOwnerId: null,
-                questions: []
+                questions: [],
+                status: null,
+                winnerName: null,
+                winnerId: null
+
+            }
+        }
+    },
+    computed: {
+        count() {
+            var askedQuestions = [];
+            for (var x in this.game.questions) {
+                console.log(this.game.questions[x].status);
+                
+                if (this.game.questions[x].type != 'chat') {
+                    askedQuestions.push(x);
+                }
+            }
+            return 20 - askedQuestions.length;
+        },
+        countClass() {
+            return {
+                'btn-outline-success': this.count >= 8,
+                'btn-outline-warning': this.count < 8 && this.count >= 5,
+                'btn-danger': this.count < 5
             }
         }
     },
@@ -48,11 +76,16 @@ export default {
     mounted() {
         var self = this;
         // Get our game data
-        firebase.database().ref('games/' + this.id).once('value').then(function(snapshot) {
-            self.gameName = snapshot.val().name;
-            self.game.gameOwnerId = snapshot.val().userId;
-            self.getOwnerData();
-            self.getQs();
+        firebase.database().ref('games/' + this.id).on('value', function(snapshot) {
+            if (snapshot.val() != null) {
+                self.gameName = snapshot.val().name;
+                self.game.gameOwnerId = snapshot.val().userId;
+                self.game.status = snapshot.val().status;
+                self.game.winnerName = snapshot.val().winnerName;
+                self.game.winnerId = snapshot.val().winnerId;
+                self.getOwnerData();
+                self.getQs();
+            }
         });
     },
     methods: {
@@ -75,16 +108,14 @@ export default {
                         type: question.val().type,
                         status: question.val().status,
                         created: question.val().created,
-                        ownerId: question.val().owner,
+                        ownerId: question.val().ownerId,
                         ownerName: question.val().ownerName
                     });
                 });
             });
         },
         addQs(question) {
-            // Get the owner data
-            console.log(this.$store.state.user.data);
-            
+            // Get the owner data            
             firebase.database().ref('games/' + this.id + '/questions').push({
                 text: question.text,
                 type: question.type,
@@ -93,6 +124,13 @@ export default {
                 ownerName: question.ownerName,
                 created: Date.now()
             });
+        },
+        gameSolved(question) {
+            firebase.database().ref('games/' + this.id).update({
+                status: 'solved',
+                winnerId: question.ownerId,
+                winnerName: question.ownerName,
+            })
         }
     }
 }

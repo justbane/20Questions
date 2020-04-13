@@ -7,8 +7,9 @@ export default new Vuex.Store({
             loggedIn: false,
             data: null,
             firebaseId: null,
-            prevRoute: null
-        }
+            
+        },
+        prevRoute: null
     },
     getters: {
         user(state) {
@@ -26,7 +27,10 @@ export default new Vuex.Store({
             state.user.firebaseId = value;
         },
         SET_PREVROUTE(state, value) {
-            state.user.prevRoute = value;
+            state.prevRoute = value;
+        },
+        RESET_PREVROUTE(state) {
+            state.prevRoute = null;
         }
     },
     actions: {
@@ -50,6 +54,9 @@ export default new Vuex.Store({
             if (value) {
                 commit("SET_PREVROUTE", value);
             }
+        },
+        resetPrevRoute({ commit }) {
+            commit("RESET_PREVROUTE");
         }
     }
 });

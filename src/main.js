@@ -19,6 +19,7 @@ const configOptions = {
     appId: "1:679458298981:web:b0fb333029de2657b67a8c",
     measurementId: "G-PXX1P26QJF"
 };
+
 firebase.initializeApp(configOptions);
 
 // Global VueRouter
@@ -33,9 +34,10 @@ firebase.auth().onAuthStateChanged(user => {
         firebase.database().ref('users').orderByChild('email').equalTo(user.email).once("value", function (snapshot) {
             if (snapshot.val() == null) {
                 // create a user
-                var newUser = firebase.database().ref('users').push({
+                var newUser = firebase.database().ref('users/' + user.uid).set({
                     name: user.displayName,
                     email: user.email,
+                    uid: user.uid,
                     profile_picture: user.providerData[0].photoURL
                 }).key;
                 store.dispatch('setFirebaseId', newUser);
@@ -47,8 +49,17 @@ firebase.auth().onAuthStateChanged(user => {
     } catch (error) {
         console.log("Not logged in");
     }
-
+    
+    if (store.state.prevRoute) {
+        var route = '/game/' + store.state.prevRoute;
+        store.dispatch('resetPrevRoute');
+        router.replace(route).catch(() => {
+            console.log("Caught navigation duplication"); 
+        });
+    
+    }
 });
+
 firebase.getCurrentUser = () => {
     return new Promise((resolve, reject) => {
         const unsubscribe = firebase.auth().onAuthStateChanged(user => {
@@ -57,16 +68,15 @@ firebase.getCurrentUser = () => {
         }, reject);
     })
 };
+
 // Route when ready
 router.beforeEach(async (to, from, next) => {
+    if (store.state.user.data == null && to.path.indexOf('/game/-') > -1) {
+        store.dispatch('setPrevRoute', to.params.id);
+    }
+    
     var user = await firebase.getCurrentUser();
     
-    //Where were they going
-    var prevRoute = to.params.id;
-    if (prevRoute) {
-        store.dispatch('setPrevRoute', prevRoute);
-    }
-
     const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
     if (requiresAuth && !user) {
         next('/');

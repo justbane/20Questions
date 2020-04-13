@@ -97,10 +97,13 @@ export default {
             this.$emit('add-question', question);
             this.questionText = '';
         },
-        answerQuestion(question, answer) {
+        answerQuestion(question, status) {
             firebase.database().ref('games/' + this.game.gameId).child('questions').child(question.id).update({
-                status: answer
+                status: status
             });
+            if (status == 'solved') {
+                this.$emit('game-solved', question);
+            }
         }
     },
     validations: {
@@ -113,8 +116,7 @@ export default {
     .questions {
         .list {
             text-align: left;
-            height: 300px;
-            max-height: 300px;
+            height: 420px;
             display: flex;
             flex-direction: column-reverse;
 
