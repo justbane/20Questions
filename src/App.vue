@@ -25,6 +25,13 @@
             </div>
         </div>
         <router-view></router-view>
+        <div class="container">
+            <div class="row mt-5">
+                <div class="col">
+                    <small>Built by and © Justin Bane</small>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
