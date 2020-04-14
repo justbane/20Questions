@@ -16,7 +16,10 @@
                         </li> 
                         <li class="nav-item">
                             <router-link to="/games" tag="a" active-class="active" exact class="flex-sm-fill text-sm-center nav-link">Games</router-link>
-                        </li>  
+                        </li> 
+                        <li class="nav-item">
+                            <router-link to="/leaderboards" tag="a" active-class="active" exact class="flex-sm-fill text-sm-center nav-link">Leaderboards</router-link>
+                        </li> 
                     </ul>
                 </div>
             </div>

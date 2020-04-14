@@ -2,6 +2,7 @@ import Vue from 'vue';
 import App from './App.vue';
 import VueRouter from 'vue-router';
 import Vuelidate from 'vuelidate';
+import VueClipboard from 'vue-clipboard2';
 import firebase from "firebase";
 import store from "./store";
 import { routes } from './routes.js';
@@ -31,19 +32,21 @@ firebase.auth().onAuthStateChanged(user => {
     store.dispatch('fetchUser', user);
     // Check a user on login
     try {
-        firebase.database().ref('users').orderByChild('email').equalTo(user.email).once("value", function (snapshot) {
+        firebase.database().ref('users').orderByChild('email').equalTo(user.email).once("value", function (snapshot) {            
             if (snapshot.val() == null) {
                 // create a user
                 var newUser = firebase.database().ref('users/' + user.uid).set({
                     name: user.displayName,
                     email: user.email,
                     uid: user.uid,
-                    profile_picture: user.providerData[0].photoURL
+                    photoURL: user.photoURL
                 }).key;
                 store.dispatch('setFirebaseId', newUser);
+                store.dispatch('setProfilePhoto', user.photoURL);
             } else {
                 var userId = Object.keys(snapshot.val())[0];
                 store.dispatch('setFirebaseId', userId);
+                store.dispatch('setProfilePhoto', user.photoURL);
             }
         });
     } catch (error) {
@@ -86,6 +89,7 @@ router.beforeEach(async (to, from, next) => {
 });
 
 Vue.use(Vuelidate);
+Vue.use(VueClipboard);
 
 // Vue mount
 new Vue({

@@ -14,15 +14,15 @@
                             </div>
                             <div class="col">
                                 <div v-if="question.type == 'chat'" class="card-body p-2">
-                                    <p class="card-text mb-0"><small class="text-muted"><strong>{{ question.ownerName }}</strong></small></p>
+                                    <p class="card-text mb-0"><img class="profileImg mr-2" :src="question.ownerPhoto" /><small class="text-muted"><strong>{{ question.ownerName }}</strong></small></p>
                                     <p class="card-text mb-1">{{ question.text }}</p>
                                 </div>
                                 <div v-else class="card-body p-2">
                                     <h5 v-if="question.type == 'question' && question.status != 'solved'" class="card-title mb-0">Question</h5>
                                     <h5 v-else class="card-title mb-0">SOLVED!</h5>
                                     <p class="card-text mb-0">{{ question.text }}</p>
-                                    <p v-if="question.type == 'question' && question.status == 'solved'" class="card-text"><small class="font-weight-bold"><em>WINNER:</em> {{ question.ownerName }}</small></p>
-                                    <p v-else class="card-text"><small class="text-muted">Asked by {{ question.ownerName }}</small></p>
+                                    <p v-if="question.type == 'question' && question.status == 'solved'" class="card-text"><img class="profileImg mr-2" :src="question.ownerPhoto" /><small class="font-weight-bold"><em>WINNER:</em> {{ question.ownerName }}</small></p>
+                                    <p v-else class="card-text"><img class="profileImg mr-2" :src="question.ownerPhoto" /><small class="text-muted">Asked by {{ question.ownerName }}</small></p>
                                 </div>
                                 <div v-if="game.gameData.gameOwnerId == $store.state.user.firebaseId && question.status == 'asked'" class="card-footer bg-transparent border-secondary d-flex justify-content-end align-items-center">
                                     <div class="btn-group btn-group-sm" role="group">
@@ -41,7 +41,7 @@
             <input v-model="questionText" v-on:keyup.enter="addChat" type="text" name="questionText" class="form-control" id="basic-url" aria-describedby="Inout the game name.">
             <div class="input-group-append">
                 <button @click="addChat" type="button" class="btn btn-outline-secondary">Chat</button>
-                <button @click="addQuestion" type="button" class="btn btn-outline-primary">Ask question</button>
+                <button v-if="game.gameData.status != 'solved'" @click="addQuestion" type="button" class="btn btn-outline-primary">Ask question</button>
             </div>
         </div>
     </div>
@@ -74,8 +74,6 @@ export default {
                 text: this.questionText,
                 type: 'question',
                 status: 'asked',
-                ownerId: this.$store.state.user.firebaseId,
-                ownerName: this.$store.state.user.data.displayName,
                 created: Date.now()
             }
             this.$emit('add-question', question);
@@ -92,6 +90,7 @@ export default {
                 status: 'posted',
                 ownerId: this.$store.state.user.firebaseId,
                 ownerName: this.$store.state.user.data.displayName,
+                ownerPhoto: this.$store.state.user.profilePhoto,
                 created: Date.now()
             }
             this.$emit('add-question', question);
@@ -126,6 +125,11 @@ export default {
 
                 .star {
                     color: #fff;
+                }
+
+                .profileImg {
+                    max-width: 20px;
+                    max-height: 20px;
                 }
             }
         }

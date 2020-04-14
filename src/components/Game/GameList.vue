@@ -3,7 +3,7 @@
         <div class="row mt-5">
             <div class="col">
                 <div class="row">
-                    <div class="col text-center">
+                    <div class="col text-center mb-5">
                         <h3>Your Games</h3>
                     </div>
                     <div class="col">
@@ -23,20 +23,18 @@
                             </div>
                             
                         </div>
+                        <small>Person, place, thing - No one will see this</small>
                     </div> 
                     <div v-else class="col w-100 text-center">
                         <ul id="gameList">  
                             <li v-for="game in games" :key="game.id" class="listItem neo">
-                                <router-link :to="`/game/${game.id}`" tag="button"  class="btn btn-outline-secondary btn-lg btn-block mr-2">{{ game.name }}</router-link>
+                                <router-link :to="`/game/${game.id}`" tag="button" :class="gameStatusClass(game)" class="btn btn-lg btn-block mr-2">
+                                    <i v-if="game.status == 'solved'" class="fas fa-star"></i> {{ game.name }}
+                                </router-link>
                                 <a @click="deleteGame(game)" class="btn btn-danger btn-lg text-white"><i class="fas fa-trash-alt"></i></a>
                             </li>   
                         </ul>
                     </div>
-                </div>
-            </div>
-            <div class="col">
-                <div class="col text-center">
-                    <h3>Invites</h3>
                 </div>
             </div>
         </div>
@@ -76,6 +74,7 @@ export default {
                     self.games.push({
                         id: game.key, 
                         name: game.val().name,
+                        status: game.val().status,
                         created: game.val().created
                     });
                 });
@@ -100,6 +99,12 @@ export default {
         },
         sortGames() {
             this.games.sort(function(a, b){return b.created-a.created});
+        },
+        gameStatusClass(game) {
+            return {
+                'btn-warning': game.status == 'solved',
+                'btn-outline-secondary': game.status != 'solved'
+            }
         }
     },
     validations: {

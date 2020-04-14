@@ -6,8 +6,8 @@ export default new Vuex.Store({
         user: {
             loggedIn: false,
             data: null,
-            firebaseId: null,
-            
+            profilePhoto: null,
+            firebaseId: null            
         },
         prevRoute: null
     },
@@ -25,6 +25,9 @@ export default new Vuex.Store({
         },
         SET_FIREBASEID(state, value) {
             state.user.firebaseId = value;
+        },
+        SET_PROFILEPHOTO(state, value) {
+            state.user.profilePhoto = value;
         },
         SET_PREVROUTE(state, value) {
             state.prevRoute = value;
@@ -48,6 +51,11 @@ export default new Vuex.Store({
         setFirebaseId({ commit }, value) {
             if (value) {
                 commit("SET_FIREBASEID", value);
+            }
+        },
+        setProfilePhoto({ commit }, value) {
+            if (value) {
+                commit("SET_PROFILEPHOTO", value);
             }
         },
         setPrevRoute({ commit }, value) {
