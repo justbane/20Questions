@@ -103,7 +103,8 @@ export default {
         gameStatusClass(game) {
             return {
                 'btn-warning': game.status == 'solved',
-                'btn-outline-secondary': game.status != 'solved'
+                'btn-outline-danger': game.status == 'lost',
+                'btn-outline-secondary': (game.status != 'solved' && game.status != 'lost')
             }
         }
     },

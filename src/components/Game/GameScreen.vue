@@ -7,7 +7,7 @@
             </div>
         </div>
         <div v-if="id" class="row">
-            <QuestionsAnswers :game="{gameData: game, gameId: id }" @add-question="addQs" @game-solved="gameSolved"></QuestionsAnswers>
+            <QuestionsAnswers :game="{gameData: game, gameId: id }" :count="count" @add-question="addQs" @game-solved="gameSolved" @end-game="endGame"></QuestionsAnswers>
             <div class="col-sm-4 stats">
                 <div class="w-100 h-100 p-3 neo">
                     <div v-bind:class="countClass" class="btn btn-lg p-3 mb-5" style="font-size: 3em; line-height: 1em;">{{ count }}</div>
@@ -15,6 +15,12 @@
                         <h4 class="mb-2">SOLVED!</h4>
                         <img v-if="game.winnerPhoto" class="profileImg mr-2 mb-2" :src="game.winnerPhoto" />
                         <h3>{{ game.winnerName }} WINS!!</h3>
+                        <p> +{{ count + 1 }} points</p>
+                    </div>
+                    <div v-if="game.status == 'lost'">
+                        <h4 class="mb-2">GAME OVER</h4>
+                        <div class="" style="font-size: 100px;"><i class="far fa-sad-tear"></i></div>
+                        <h3>Nobody wins...</h3>
                         <p> +{{ count }} points</p>
                     </div>
                     <h4 v-else >Questions remaining</h4>
@@ -67,7 +73,8 @@ export default {
                     askedQuestions.push(x);
                 }
             }
-            return 20 - askedQuestions.length;
+            var questionsLeft = 20 - askedQuestions.length;
+            return questionsLeft;
         },
         countClass() {
             return {
@@ -157,12 +164,18 @@ export default {
             });
             // leaders update
             firebase.database().ref('leaderboard/' + question.ownerId).once('value').then((snapshot) => {
-                var points = snapshot.val().points + self.count;
+                var points = snapshot.val().points + self.count + 1;
                 var games = (!snapshot.val().games) ? 1 : snapshot.val().games + 1;
                 firebase.database().ref('leaderboard/' + question.ownerId).update({
                     points: points,
                     games: games
                 });
+            });
+        },
+        endGame(status) {
+            // game update
+            firebase.database().ref('games/' + this.id).update({
+                status: status
             });
         }
     }

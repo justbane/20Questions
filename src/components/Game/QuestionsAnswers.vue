@@ -41,7 +41,7 @@
             <input v-model="questionText" v-on:keyup.enter="addChat" type="text" name="questionText" class="form-control" id="basic-url" aria-describedby="Inout the game name.">
             <div class="input-group-append">
                 <button @click="addChat" type="button" class="btn btn-outline-secondary">Chat</button>
-                <button v-if="game.gameData.status != 'solved'" @click="addQuestion" type="button" class="btn btn-outline-primary">Ask question</button>
+                <button v-if="(game.gameData.status != 'solved' && count > 0) || count > 0" @click="addQuestion" type="button" class="btn btn-outline-primary">Ask question</button>
             </div>
         </div>
     </div>
@@ -61,6 +61,10 @@ export default {
     props: {
         game: {
             type: Object,
+            required: true
+        },
+        count: {
+            type: Number,
             required: true
         }
     },
@@ -102,6 +106,9 @@ export default {
             });
             if (status == 'solved') {
                 this.$emit('game-solved', question);
+            }
+            if(this.count < 1 && status != 'solved') {
+                this.$emit('end-game', 'lost');
             }
         }
     },
