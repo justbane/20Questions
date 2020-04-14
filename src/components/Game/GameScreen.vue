@@ -84,7 +84,7 @@ export default {
             }
         },
         gameURL() {
-            return "https://www.20questions.games/#/game/" + this.id;
+            return "https://20questions.games/#/game/" + this.id;
         }
     },
     props: {
