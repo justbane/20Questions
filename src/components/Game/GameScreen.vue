@@ -96,6 +96,15 @@ export default {
     components: {
         QuestionsAnswers,
     },
+    beforeRouteEnter (to, from, next) {
+         firebase.database().ref('games/' + to.params.id).once('value').then((snapshot) => {
+            if (snapshot.val() != null) {
+                next();
+            } else {
+                next('/games');
+            }
+        });
+    },
     mounted() {
         var self = this;
         // Get our game data
