@@ -3,6 +3,7 @@
         <div class="row mt-5">
             <div class="col">
                 <h2>{{ title }}</h2>
+                <p>Run a game with friends.</p>
             </div>
         </div>
         <div class="row">
