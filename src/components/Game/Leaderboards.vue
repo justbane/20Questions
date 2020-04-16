@@ -7,10 +7,7 @@
         </div>
         <div class="row">
             <div class="col leaders">
-                <div v-if="leaders.length < 1" class="text-center">
-                    <p><i class="fas fa-spinner"></i> Loading data</p>
-                </div>
-                <table v-else class="table">
+                <table class="table">
                     <thead class="thead-dark">
                         <tr>
                             <th scope="col">Placement</th>
@@ -46,19 +43,21 @@ export default {
     mounted() {
         var self = this;
         firebase.database().ref('leaderboard').on('value', (snapshot) => {
-            var userId = Object.keys(snapshot.val())[0];
-            self.leaders = [];
-            snapshot.forEach((leader) => {
-                firebase.database().ref('users/' + userId).once('value').then((user) => {
-                    self.leaders.push({
-                        id: userId,
-                        name: user.val().name,
-                        points: leader.val().points,
-                        games: leader.val().games
+            if (snapshot.val() != null) {
+                var userId = Object.keys(snapshot.val())[0];
+                self.leaders = [];
+                snapshot.forEach((leader) => {
+                    firebase.database().ref('users/' + userId).once('value').then((user) => {
+                        self.leaders.push({
+                            id: userId,
+                            name: user.val().name,
+                            points: leader.val().points,
+                            games: leader.val().games
+                        });
                     });
                 });
-            });
-            this.sortLeaders();
+                this.sortLeaders();
+            }
         });
     },
     methods: {
