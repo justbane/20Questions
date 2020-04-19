@@ -1,7 +1,7 @@
 <template>
     <div class="container">
         <div class="row mt-5">
-            <div class="col">
+            <div class="col-md-8">
                 <div class="row">
                     <div class="col text-center mb-5">
                         <h3>Your Games</h3>
@@ -11,7 +11,7 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div v-if="showGameForm" class="col w-100 text-center">
+                    <div v-if="showGameForm" class="col text-center">
                         <div class="input-group mb-3 neo">
                             <div class="input-group-prepend input-group-append">
                                 <span class="input-group-text">Game Name:</span>
@@ -25,7 +25,7 @@
                         </div>
                         <small>Person, place, thing - No one will see this</small>
                     </div> 
-                    <div v-else class="col w-100 text-center">
+                    <div v-else class="col text-center">
                         <ul id="gameList">  
                             <li v-for="game in games" :key="game.id" class="listItem neo">
                                 <router-link :to="`/game/${game.id}`" tag="button" :class="gameStatusClass(game)" class="btn btn-lg btn-block mr-2">
@@ -34,6 +34,19 @@
                                 <a @click="deleteGame(game)" class="btn btn-danger btn-lg text-white"><i class="fas fa-trash-alt"></i></a>
                             </li>   
                         </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="row">
+                    <div class="col mb-5">
+                        <h3>Stats</h3>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col text-center">
+                        <p><strong>Games Played: </strong>{{ played }}</p>
+                        <p><strong>Total Points: </strong> {{ pointsTotal }} </p>
                     </div>
                 </div>
             </div>
@@ -52,16 +65,20 @@ export default {
         return {
             games: [],
             showGameForm: false,
-            gameName: ''
+            gameName: '',
+            played: 0,
+            pointsTotal: 0
         }
     },
     mounted() {
         // Get the games list
         this.getGames();
+        this.getStats();
         // try again on auth state change
         this.$store.subscribe((mutation, state) => {
             if (mutation.type == "SET_FIREBASEID" && state.user.loggedIn) {
                 this.getGames();
+                this.getStats();
             }
         });
     },
@@ -81,6 +98,15 @@ export default {
                 self.sortGames();
             });
         },
+        getStats() {
+            var self = this;
+            firebase.database().ref('leaderboard/' + this.$store.state.user.firebaseId).once('value').then((stats) => {
+                self.played = stats.val().games;
+                self.pointsTotal = stats.val().points;
+            }).catch(() => {
+                // catch uncaught in promise
+            });
+        },
         createGame() {
             this.$v.$touch();
             if (this.$v.$invalid) {
@@ -98,7 +124,17 @@ export default {
             firebase.database().ref('games/' + game.id).remove();
         },
         sortGames() {
-            this.games.sort(function(a, b){return b.created-a.created});
+            this.games.sort((a, b) => {
+                const first = a.created;
+                const second = b.created;
+                let comparison = 0;
+                if (first < second) {
+                    comparison = 1;
+                } else if (first > second) {
+                    comparison = -1
+                }
+                return comparison;
+            });
         },
         gameStatusClass(game) {
             return {

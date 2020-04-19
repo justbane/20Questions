@@ -44,25 +44,36 @@ export default {
         var self = this;
         firebase.database().ref('leaderboard').on('value', (snapshot) => {
             if (snapshot.val() != null) {
-                var userId = Object.keys(snapshot.val())[0];
                 self.leaders = [];
                 snapshot.forEach((leader) => {
-                    firebase.database().ref('users/' + userId).once('value').then((user) => {
+                    var id = leader.key;
+                    firebase.database().ref('users/' + id).once('value').then((user) => {
                         self.leaders.push({
-                            id: userId,
+                            id: id,
                             name: user.val().name,
                             points: leader.val().points,
                             games: leader.val().games
                         });
+                        this.sortLeaders();
                     });
                 });
-                this.sortLeaders();
+                
             }
         });
     },
     methods: {
         sortLeaders() {
-            this.leaders.sort(function(a, b){return b.points-a.points});
+            this.leaders.sort((a, b) => {
+                const first = a.points;
+                const second = b.points;
+                let comparison = 0;
+                if (first < second) {
+                    comparison = 1;
+                } else if (first > second) {
+                    comparison = -1
+                }
+                return comparison;
+            });
         }
     }
 }

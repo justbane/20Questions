@@ -26,9 +26,9 @@
                                 </div>
                                 <div v-if="game.gameData.gameOwnerId == $store.state.user.firebaseId && question.status == 'asked'" class="card-footer bg-transparent border-secondary d-flex justify-content-end align-items-center">
                                     <div class="btn-group btn-group-sm" role="group">
-                                        <button @click="answerQuestion(question, 'confirmed')" class="btn btn-primary mr-1 ml-2"><i class="fas fa-check"></i> Yes</button>
-                                        <button @click="answerQuestion(question, 'denied')" class="btn btn-danger mr-1"><i class="fas fa-check"></i> No</button>
-                                        <button @click="answerQuestion(question, 'solved')" class="btn btn-warning"><i class="fas fa-star"></i> Winner</button>
+                                        <button v-if="(game.gameData.status != 'solved')" @click="answerQuestion(question, 'confirmed')" class="btn btn-primary mr-1 ml-2"><i class="fas fa-check"></i> Yes</button>
+                                        <button v-if="(game.gameData.status != 'solved')" @click="answerQuestion(question, 'denied')" class="btn btn-danger mr-1"><i class="fas fa-check"></i> No</button>
+                                        <button v-if="(game.gameData.status != 'solved')" @click="answerQuestion(question, 'solved')" class="btn btn-warning"><i class="fas fa-star"></i> Winner</button>
                                     </div>
                                 </div>
                             </div>
@@ -41,7 +41,7 @@
             <input v-model="questionText" v-on:keyup.enter="addChat" type="text" name="questionText" class="form-control" id="basic-url" aria-describedby="Inout the game name.">
             <div class="input-group-append">
                 <button @click="addChat" type="button" class="btn btn-outline-secondary">Chat</button>
-                <button v-if="(game.gameData.status != 'solved' && count > 0) || count > 0" @click="addQuestion" type="button" class="btn btn-outline-primary">Ask question</button>
+                <button v-if="showQuestionButton" @click="addQuestion" type="button" class="btn btn-outline-primary">Ask question</button>
             </div>
         </div>
     </div>
@@ -56,6 +56,16 @@ export default {
     data() {
         return {
             questionText: ''
+        }
+    },
+    computed: {
+        showQuestionButton() {
+            if (this.game.gameData.gameOwnerId != this.$store.state.user.firebaseId) {
+                if (!this.game.gameData.status && this.count > 0) {
+                    return true;
+                }
+            }
+            return false;
         }
     },
     props: {

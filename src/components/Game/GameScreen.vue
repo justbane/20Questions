@@ -17,13 +17,17 @@
                         <h3>{{ game.winnerName }} WINS!!</h3>
                         <p> +{{ count + 1 }} points</p>
                     </div>
-                    <div v-if="game.status == 'lost'">
+                    <div v-else-if="game.status == 'lost'">
                         <h4 class="mb-2">GAME OVER</h4>
                         <div class="" style="font-size: 100px;"><i class="far fa-sad-tear"></i></div>
                         <h3>Nobody wins...</h3>
                         <p> +{{ count }} points</p>
                     </div>
                     <h4 v-else >Questions remaining</h4>
+
+                    <div v-if="game.players > 0" class="mt-5">
+                        Currently playing: {{ game.players }}
+                    </div>
 
                     <div class="mt-5">
                         Share this game! 
@@ -57,6 +61,7 @@ export default {
                 gameOwner: '',
                 gameOwnerId: null,
                 questions: [],
+                players: 0,
                 status: null,
                 winnerName: null,
                 winnerId: null,
@@ -105,6 +110,12 @@ export default {
             }
         });
     },
+    beforeRouteLeave (to, from, next) {
+        // Unset player
+        firebase.database().ref('players/' + this.id + '/' + this.$store.state.user.firebaseId).remove().then(() => {
+            next()
+        });
+    },
     mounted() {
         var self = this;
         // Get our game data
@@ -120,6 +131,12 @@ export default {
                 self.getQs();
             }
         });
+        // Set player
+        firebase.database().ref('players/' + this.id + '/' + this.$store.state.user.firebaseId).update({
+            'name': this.$store.state.user.data.displayName
+        }).then(() => {
+            self.getPlayers();
+        });
     },
     methods: {
         getOwnerData() {
@@ -129,6 +146,12 @@ export default {
                 self.game.gameOwner = snapshot.val().name;
             }).catch(() => {
                 // caught
+            });
+        },
+        getPlayers() {
+            var self = this;
+            firebase.database().ref('players/' + this.id).on('value', (snapshot) => {                
+                self.game.players = snapshot.numChildren();
             });
         },
         getQs() {
@@ -173,8 +196,15 @@ export default {
             });
             // leaders update
             firebase.database().ref('leaderboard/' + question.ownerId).once('value').then((snapshot) => {
-                var points = snapshot.val().points + self.count + 1;
-                var games = (!snapshot.val().games) ? 1 : snapshot.val().games + 1;
+                var points = 0;
+                var games = 0;
+                if (snapshot.val() == null) {
+                    points = self.count + 1;
+                    games = 1;
+                } else {
+                    points = snapshot.val().points + self.count + 1;
+                    games = (!snapshot.val().games) ? 1 : snapshot.val().games + 1;
+                }
                 firebase.database().ref('leaderboard/' + question.ownerId).update({
                     points: points,
                     games: games
