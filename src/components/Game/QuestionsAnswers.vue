@@ -59,9 +59,9 @@ export default {
         }
     },
     computed: {
-        showQuestionButton() {
+        showQuestionButton() {  
             if (this.game.gameData.gameOwnerId != this.$store.state.user.firebaseId) {
-                if (!this.game.gameData.status && this.count > 0) {
+                if (this.game.gameData.status == 'inPlay' && this.count > 0) {
                     return true;
                 }
             }

@@ -4,7 +4,7 @@
             <div class="row mt-1">
                 <div class="col">
                     <div v-if="user.loggedIn" class="d-flex justify-content-end">
-                        <button @click="logout" class="btn neo">Logout {{ user.data.displayName }}</button>
+                        <button @click="logout" class="btn neo">Logout {{ user.data.email }}</button>
                     </div>
                 </div>
             </div>
@@ -15,7 +15,10 @@
                             <router-link to="/" tag="a" active-class="active" exact class="flex-sm-fill text-sm-center nav-link">Home</router-link>
                         </li> 
                         <li class="nav-item">
-                            <router-link to="/games" tag="a" active-class="active" exact class="flex-sm-fill text-sm-center nav-link">Games</router-link>
+                            <router-link to="/lobby" tag="a" active-class="active" exact class="flex-sm-fill text-sm-center nav-link">Lobby</router-link>
+                        </li>
+                        <li class="nav-item">
+                            <router-link to="/games" tag="a" active-class="active" exact class="flex-sm-fill text-sm-center nav-link">Your Games</router-link>
                         </li> 
                         <li class="nav-item">
                             <router-link to="/leaderboards" tag="a" active-class="active" exact class="flex-sm-fill text-sm-center nav-link">Leaderboards</router-link>
@@ -91,6 +94,17 @@ export default {
             }
             input, textarea, select {
                 border: none;
+            }
+        }
+    }
+    #gameList {
+        li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            &.listItem {
+                margin-bottom: 10px;
             }
         }
     }

@@ -1,6 +1,7 @@
 import Home from './components/Home.vue';
 import GameList from './components/Game/GameList.vue'
 import GameScreen from './components/Game/GameScreen.vue';
+import GameLobby from './components/Game/GameLobby.vue';
 import Leaderboards from './components/Game/Leaderboards.vue';
 import PageNotFound from './components/PageNotFound.vue';
 
@@ -9,6 +10,14 @@ export const routes = [
         path: '/', 
         name: 'home', 
         component: Home 
+    },
+    {
+        path: '/lobby',
+        name: 'lobby',
+        component: GameLobby,
+        meta: {
+            requiresAuth: true
+        }
     },
     { 
         path: '/games', 

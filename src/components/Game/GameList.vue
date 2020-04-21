@@ -115,7 +115,8 @@ export default {
             firebase.database().ref('games').push({
                 name: this.gameName,
                 userId: this.$store.state.user.firebaseId,
-                created: Date.now()
+                created: Date.now(),
+                status: 'inPlay'
             });
             this.gameName = '';
             this.showGameForm = false;
@@ -151,15 +152,5 @@ export default {
 </script>
 
 <style lang="less" scoped>
-    #gameList {
-        li {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-
-            &.listItem {
-                margin-bottom: 10px;
-            }
-        }
-    }
+    
 </style>
