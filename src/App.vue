@@ -1,7 +1,7 @@
 <template>
     <div id="main">
         <div class="container">
-            <div class="row mt-1">
+            <div class="row mt-1 mb-3">
                 <div class="col">
                     <div v-if="user.loggedIn" class="d-flex justify-content-end">
                         <button @click="logout" class="btn neo">Logout {{ user.data.email }}</button>
