@@ -1,11 +1,11 @@
 <template>
-    <div class="questions col-sm-8">
+    <div class="questions col-md-8 col-sm-12">
         <div class="list text-wrap overflow-auto mb-3 w-100 neo">
             <ul>
                 <li v-for="question in game.gameData.questions" :key="question.id">
                     <div class="card">
                         <div class="row no-gutters mb-0">
-                            <div class="col-md-2">
+                            <div class="col-2">
                                 <button v-if="question.type == 'question' && question.status == 'asked'" type="button" class="btn btn-outline-primary w-100 h-100" style="font-size: 35px;"><i class="fas fa-question"></i></button>
                                 <button v-if="question.type == 'question' && question.status == 'denied'" type="button" class="btn btn-danger w-100 h-100" style="font-size: 35px;"><i class="fas fa-times"></i></button>
                                 <button v-if="question.type == 'question' && question.status == 'confirmed'" type="button" class="btn btn-success w-100 h-100" style="font-size: 35px;"><i class="fas fa-check"></i></button>
@@ -41,7 +41,10 @@
             <input v-model="questionText" v-on:keyup.enter="addChat" type="text" name="questionText" class="form-control" id="basic-url" aria-describedby="Inout the game name.">
             <div class="input-group-append">
                 <button @click="addChat" type="button" class="btn btn-outline-secondary">Chat</button>
-                <button v-if="showQuestionButton" @click="addQuestion" type="button" class="btn btn-outline-primary">Ask question</button>
+                <button v-if="showQuestionButton" :disabled="waitToQuestion > 0" @click="addQuestion" type="button" class="btn btn-outline-primary">
+                    <span v-if="waitToQuestion > 0">Ask another question in {{waitToQuestion}}</span>
+                    <span v-else>Ask question</span>
+                </button>
             </div>
         </div>
     </div>
@@ -55,7 +58,8 @@ export default {
     name: 'Questions',
     data() {
         return {
-            questionText: ''
+            questionText: '',
+            waitToQuestion: 0
         }
     },
     computed: {
@@ -91,6 +95,7 @@ export default {
                 created: Date.now()
             }
             this.$emit('add-question', question);
+            this.startAnswerTimer();
             this.questionText = '';            
         },
         addChat() {
@@ -119,6 +124,22 @@ export default {
             }
             if(this.count < 1 && status != 'solved') {
                 this.$emit('end-game', 'lost');
+            }
+        },
+        startAnswerTimer() {
+            if (this.waitToQuestion == 0) {
+                this.waitToQuestion = 10;
+                setTimeout(() => {
+                    this.waitToQuestion -= 1;
+                    this.startAnswerTimer();
+                }, 1000);
+            } else {
+                setTimeout(() => {
+                    this.waitToQuestion -= 1;
+                    if (this.waitToQuestion > 0) {
+                        this.startAnswerTimer();
+                    }
+                }, 1000);
             }
         }
     },

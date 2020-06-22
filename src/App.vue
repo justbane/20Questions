@@ -14,9 +14,9 @@
                         <li class="nav-item">
                             <router-link to="/" tag="a" active-class="active" exact class="flex-sm-fill text-sm-center nav-link">Home</router-link>
                         </li> 
-                        <li class="nav-item">
+                        <!-- <li class="nav-item">
                             <router-link to="/lobby" tag="a" active-class="active" exact class="flex-sm-fill text-sm-center nav-link">Lobby</router-link>
-                        </li>
+                        </li> -->
                         <li class="nav-item">
                             <router-link to="/games" tag="a" active-class="active" exact class="flex-sm-fill text-sm-center nav-link">Your Games</router-link>
                         </li> 
@@ -85,6 +85,12 @@ export default {
             box-shadow:  6px 6px 12px #dddcdd, 
             -6px -6px 12px #ffffff;
             margin: 5px;
+
+            @media (max-width: 480px) { 
+                margin: 0;
+                box-shadow:  3px 3px 6px #dddcdd, 
+            -3px -3px 6px #ffffff;
+            }
 
             .input-group-prepend, .imput-group-append {
                 border: none;

@@ -3,12 +3,12 @@
         <div class="row>">
             <div class="title w-100 mb-5">
                 <!-- <h1>20 Questions</h1> -->
-                <h4>{{ game.gameOwner }} is thinking of something...</h4><p>You've got 20 questions to figure it out?</p>
+                <h4>{{ game.gameOwner }} is thinking of something...</h4><p>You've got 20 questions to figure it out!</p>
             </div>
         </div>
         <div v-if="id" class="row">
             <QuestionsAnswers :game="{gameData: game, gameId: id }" :count="count" @add-question="addQs" @game-solved="gameSolved" @end-game="endGame"></QuestionsAnswers>
-            <div class="col-sm-4 stats">
+            <div class="col-md-4 col-sm-12 stats">
                 <div class="w-100 h-100 p-3 neo">
                     <div v-bind:class="countClass" class="btn btn-lg p-3 mb-5" style="font-size: 3em; line-height: 1em;">{{ count }}</div>
                     <div v-if="game.status == 'solved'">
