@@ -3,7 +3,7 @@
         <div class="row>">
             <div class="title w-100 mb-5">
                 <!-- <h1>20 Questions</h1> -->
-                <h4>{{ game.gameOwner }} is thinking of something...</h4><p>You've got 20 questions to figure it out!</p>
+                <h4>I'm thinking of something...</h4><p>You've got {{ count }} questions to figure it out!</p>
             </div>
         </div>
         <div v-if="id" class="row">
@@ -102,7 +102,7 @@ export default {
         QuestionsAnswers,
     },
     beforeRouteEnter (to, from, next) {
-         firebase.database().ref('games/' + to.params.id).once('value').then((snapshot) => {
+        firebase.database().ref('games/' + to.params.id).once('value').then((snapshot) => {
             if (snapshot.val() != null) {
                 next();
             } else {
@@ -112,7 +112,9 @@ export default {
     },
     beforeRouteLeave (to, from, next) {
         // Unset player
-        firebase.database().ref('players/' + this.id + '/' + this.$store.state.user.firebaseId).remove().then(() => {
+        firebase.database().ref('players/' + this.id + '/' + this.$store.state.user.firebaseId).update({
+            online: false
+        }).then(() => {
             next()
         });
     },
@@ -133,7 +135,8 @@ export default {
         });
         // Set player
         firebase.database().ref('players/' + this.id + '/' + this.$store.state.user.firebaseId).update({
-            'name': this.$store.state.user.data.displayName
+            'name': this.$store.state.user.data.displayName,
+            'online': true
         }).then(() => {
             self.getPlayers();
         });
@@ -150,7 +153,7 @@ export default {
         },
         getPlayers() {
             var self = this;
-            firebase.database().ref('players/' + this.id).on('value', (snapshot) => {                
+            firebase.database().ref('players/' + this.id).orderByChild('online').equalTo(true).on('value', (snapshot) => {                
                 self.game.players = snapshot.numChildren();
             });
         },

@@ -35,6 +35,22 @@
                         </ul>
                     </div>
                 </div>
+                <div class="row">
+                    <div class="col text-center mb-5">
+                        <h4>Currently Playing</h4>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col text-center mb-5">
+                        <ul id="gameList">  
+                            <li v-for="game in gamesPlaying" :key="game.id" class="listItem neo">
+                                <router-link :to="`/game/${game.id}`" tag="button" class="btn btn-block">
+                                    Started by {{ game.owner }} : {{ game.status }}
+                                </router-link>
+                            </li>   
+                        </ul>
+                    </div>
+                </div>
             </div>
             <div class="col-md-4">
                 <div class="row">
@@ -63,6 +79,7 @@ export default {
     data() {
         return {
             games: [],
+            gamesPlaying: [],
             showGameForm: false,
             gameName: '',
             played: 0,
@@ -72,6 +89,7 @@ export default {
     mounted() {
         // Get the games list
         this.getGames();
+        this.getGamesPlaying();
         this.getStats();
         // try again on auth state change
         this.$store.subscribe((mutation, state) => {
@@ -97,6 +115,28 @@ export default {
                 self.sortGames();
             });
         },
+        getGamesPlaying() {
+            var self = this;
+            firebase.database().ref('players').on('value', function(snapshot) {
+                self.gamesPlaying = [];
+                snapshot.forEach(function(game) {
+                    game.forEach(function(player) {
+                        if (player.key == self.$store.state.user.firebaseId) {
+                            firebase.database().ref('games/' + game.key).once('value').then(function(snapshot) {    
+                                if (snapshot.val()) {
+                                    self.gamesPlaying.push({
+                                        id: game.key,
+                                        owner: snapshot.val().userName,
+                                        status: (snapshot.val().status == 'solved') ? 'Solved' : 'Playing'
+                                    });
+                                }                                                          
+                            });
+                        }
+                    });
+                });
+                // self.sortGames();
+            });
+        },
         getStats() {
             var self = this;
             firebase.database().ref('leaderboard/' + this.$store.state.user.firebaseId).once('value').then((stats) => {
@@ -114,6 +154,7 @@ export default {
             firebase.database().ref('games').push({
                 name: this.gameName,
                 userId: this.$store.state.user.firebaseId,
+                userName: this.$store.state.user.data.displayName,
                 created: Date.now(),
                 status: 'inPlay'
             });
@@ -121,7 +162,10 @@ export default {
             this.showGameForm = false;
         },
         deleteGame(game) {
-            firebase.database().ref('games/' + game.id).remove();
+            var remove = {};
+            remove['games/' + game.id] = null;
+            remove['players/' + game.id] = null;
+            firebase.database().ref().update(remove);
         },
         sortGames() {
             this.games.sort((a, b) => {

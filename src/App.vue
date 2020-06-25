@@ -1,17 +1,13 @@
 <template>
-    <div id="main">
-        <div class="container">
-            <div class="row mt-1 mb-3">
-                <div class="col">
-                    <div v-if="user.loggedIn" class="d-flex justify-content-end">
-                        <button @click="logout" class="btn neo">Logout {{ user.data.email }}</button>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col">
-                    <ul class="nav justify-content-center">
-                        <li class="nav-item">
+    <div id="main">        
+        <nav class="navbar navbar-expand-lg navbar-light bg-light neo mb-5">
+            <a class="navbar-brand" href="#">20 Questions</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item">
                             <router-link to="/" tag="a" active-class="active" exact class="flex-sm-fill text-sm-center nav-link">Home</router-link>
                         </li> 
                         <!-- <li class="nav-item">
@@ -22,11 +18,13 @@
                         </li> 
                         <li class="nav-item">
                             <router-link to="/leaderboards" tag="a" active-class="active" exact class="flex-sm-fill text-sm-center nav-link">Leaderboards</router-link>
-                        </li> 
-                    </ul>
+                        </li>
+                </ul>
+                <div v-if="user.loggedIn">
+                    <button @click="logout" class="btn">Logout {{ user.data.email }}</button>
                 </div>
             </div>
-        </div>
+        </nav>
         <router-view></router-view>
         <div class="container">
             <div class="row mt-5">
