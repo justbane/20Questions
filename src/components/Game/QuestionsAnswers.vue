@@ -7,9 +7,15 @@
                         <div class="row no-gutters mb-0">
                             <div class="col-2">
                                 <button v-if="question.type == 'question' && question.status == 'asked'" type="button" class="btn btn-outline-primary w-100 h-100" style="font-size: 35px;"><i class="fas fa-question"></i></button>
-                                <button v-if="question.type == 'question' && question.status == 'denied'" type="button" class="btn btn-danger w-100 h-100" style="font-size: 35px;"><i class="fas fa-times"></i></button>
-                                <button v-if="question.type == 'question' && question.status == 'confirmed'" type="button" class="btn btn-success w-100 h-100" style="font-size: 35px;"><i class="fas fa-check"></i></button>
-                                <button v-if="question.type == 'question' && question.status == 'solved'" type="button" class="btn btn-warning w-100 h-100 star" style="font-size: 35px;"><i class="fas fa-star"></i></button>
+                                <button v-if="question.type == 'question' && question.status == 'denied'" type="button" class="btn btn-danger w-100 h-100" style="font-size: 35px;">
+                                    <i class="fas fa-times"></i><span class="d-none d-md-block">NO</span>
+                                </button>
+                                <button v-if="question.type == 'question' && question.status == 'confirmed'" type="button" class="btn btn-success w-100 h-100" style="font-size: 35px;">
+                                    <i class="fas fa-check"></i><span class="d-none d-md-block">YES</span>
+                                </button>
+                                <button v-if="question.type == 'question' && question.status == 'solved'" type="button" class="btn btn-warning w-100 h-100 star" style="font-size: 35px;">
+                                    <i class="fas fa-star"></i><span class="d-none d-md-block">WIN</span>
+                                </button>
                                 <button v-if="question.type == 'chat' && question.status == 'posted'" type="button" class="btn btn-secondary w-100 h-100 star" style="font-size: 35px;"><i class="far fa-comment"></i></button>
                             </div>
                             <div class="col">
