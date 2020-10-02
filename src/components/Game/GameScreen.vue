@@ -32,7 +32,7 @@
                     <div class="mt-5">
                         Share this game! 
                         <div class="input-group">
-                            <input v-model="this.gameURL" class="form-control" disabled />
+                            <input v-model="this.gameURL" class="form-control" />
                             <div class="input-group-append">
                                 <button v-clipboard:copy="gameURL" class="btn btn-secondary"><i class="far fa-copy"></i></button>
                             </div>

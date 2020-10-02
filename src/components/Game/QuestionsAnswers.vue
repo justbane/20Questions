@@ -1,34 +1,34 @@
 <template>
     <div class="questions col-md-8 col-sm-12">
-        <div class="list text-wrap overflow-auto mb-3 w-100 neo">
+        <div class="card list text-wrap overflow-auto mb-3 w-100 neo">
             <ul>
                 <li v-for="question in game.gameData.questions" :key="question.id">
-                    <div class="card">
+                    <div class="mb-2">
                         <div class="row no-gutters mb-0">
-                            <div class="col-2">
-                                <button v-if="question.type == 'question' && question.status == 'asked'" type="button" class="btn btn-outline-primary w-100 h-100" style="font-size: 35px;"><i class="fas fa-question"></i></button>
-                                <button v-if="question.type == 'question' && question.status == 'denied'" type="button" class="btn btn-danger w-100 h-100" style="font-size: 35px;">
-                                    <i class="fas fa-times"></i><span class="d-none d-md-block">NO</span>
+                            <div class="col-2 pl-2">
+                                <button v-if="question.type == 'question' && question.status == 'asked'" type="button" class="btn btn-outline-primary w-100 h-100" style="font-size: 25px;"><i class="fas fa-question"></i></button>
+                                <button v-if="question.type == 'question' && question.status == 'denied'" type="button" class="btn btn-danger w-100 h-100" style="font-size: 25px;">
+                                    <i class="fas fa-times"></i><span class="d-none d-lg-block">NO</span>
                                 </button>
-                                <button v-if="question.type == 'question' && question.status == 'confirmed'" type="button" class="btn btn-success w-100 h-100" style="font-size: 35px;">
-                                    <i class="fas fa-check"></i><span class="d-none d-md-block">YES</span>
+                                <button v-if="question.type == 'question' && question.status == 'confirmed'" type="button" class="btn btn-success w-100 h-100" style="font-size: 25px;">
+                                    <i class="fas fa-check"></i><span class="d-none d-lg-block">YES</span>
                                 </button>
-                                <button v-if="question.type == 'question' && question.status == 'solved'" type="button" class="btn btn-warning w-100 h-100 star" style="font-size: 35px;">
-                                    <i class="fas fa-star"></i><span class="d-none d-md-block">WIN</span>
+                                <button v-if="question.type == 'question' && question.status == 'solved'" type="button" class="btn btn-warning w-100 h-100" style="font-size: 25px;">
+                                    <i class="fas fa-star"></i><span class="d-none d-lg-block">WIN</span>
                                 </button>
-                                <button v-if="question.type == 'chat' && question.status == 'posted'" type="button" class="btn btn-secondary w-100 h-100 star" style="font-size: 35px;"><i class="far fa-comment"></i></button>
+                                <button v-if="question.type == 'chat' && question.status == 'posted'" type="button" class="btn btn-secondary disabled w-100 h-100" style="font-size: 25px;"><i class="far fa-comment"></i></button>
                             </div>
-                            <div class="col">
+                            <div class="col pl-2">
                                 <div v-if="question.type == 'chat'" class="card-body p-2">
-                                    <p class="card-text mb-0"><img v-if="question.ownerPhoto != null" class="profileImg mr-2" :src="question.ownerPhoto" /><small class="text-muted"><strong>{{ question.ownerName }}</strong></small></p>
-                                    <p class="card-text mb-1">{{ question.text }}</p>
+                                    <p class="card-text mb-2"><img v-if="question.ownerPhoto != null" class="profileImg mr-2" :src="question.ownerPhoto" /><small class="text-muted"><strong>{{ question.ownerName }}</strong></small></p>
+                                    <p class="card-text mb-1 lead">{{ question.text }}</p>
                                 </div>
                                 <div v-else class="card-body p-2">
-                                    <h5 v-if="question.type == 'question' && question.status != 'solved'" class="card-title mb-0">Question</h5>
-                                    <h5 v-else class="card-title mb-0">SOLVED!</h5>
-                                    <p class="card-text mb-0">{{ question.text }}</p>
+                                    <h5 v-if="question.type == 'question' && question.status != 'solved'" class="card-title mb-1">Question</h5>
+                                    <h5 v-else class="card-title mb-1">SOLVED!</h5>
                                     <p v-if="question.type == 'question' && question.status == 'solved'" class="card-text"><img v-if="question.ownerPhoto != null" class="profileImg mr-2" :src="question.ownerPhoto" /><small class="font-weight-bold"><em>WINNER:</em> {{ question.ownerName }}</small></p>
                                     <p v-else class="card-text"><img v-if="question.ownerPhoto != null" class="profileImg mr-2" :src="question.ownerPhoto" /><small class="text-muted">Asked by {{ question.ownerName }}</small></p>
+                                    <p class="card-text text lead">{{ question.text }}</p>
                                 </div>
                                 <div v-if="game.gameData.gameOwnerId == $store.state.user.firebaseId && question.status == 'asked'" class="card-footer bg-transparent border-secondary d-flex justify-content-end align-items-center">
                                     <div class="btn-group btn-group-sm" role="group">
@@ -46,7 +46,7 @@
         <div class="input-group mb-3 w-100 neo">
             <input v-model="questionText" v-on:keyup.enter="addChat" type="text" name="questionText" class="form-control" id="basic-url" aria-describedby="Inout the game name.">
             <div class="input-group-append">
-                <button @click="addChat" type="button" class="btn btn-outline-secondary">Chat</button>
+                <button @click="addChat" type="button" class="btn btn-secondary">Chat</button>
                 <button v-if="showQuestionButton" :disabled="waitToQuestion > 0" @click="addQuestion" type="button" class="btn btn-outline-primary">
                     <span v-if="waitToQuestion > 0">Ask another question in {{waitToQuestion}}</span>
                     <span v-else>Ask question</span>
@@ -166,10 +166,6 @@ export default {
             ul {
                 padding: 0;
                 list-style: none;
-
-                .star {
-                    color: #fff;
-                }
 
                 .profileImg {
                     max-width: 20px;

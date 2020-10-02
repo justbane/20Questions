@@ -73,33 +73,9 @@ export default {
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
         text-align: center;
-        color: #2c3e50;
+        //color: #2c3e50;
         margin:15px auto 0 auto;
         max-width: 1024px;
-
-        .neo {
-            border-radius: 5px;
-            background: #f5f4f6;
-            box-shadow:  6px 6px 12px #dddcdd, 
-            -6px -6px 12px #ffffff;
-            margin: 5px;
-
-            @media (max-width: 480px) { 
-                margin: 0;
-                box-shadow:  3px 3px 6px #dddcdd, 
-            -3px -3px 6px #ffffff;
-            }
-
-            .input-group-prepend, .imput-group-append {
-                border: none;
-                span {
-                    border: none;
-                }
-            }
-            input, textarea, select {
-                border: none;
-            }
-        }
     }
     #gameList {
         li {
