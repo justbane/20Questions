@@ -3,48 +3,44 @@
         <div class="row mt-5">
             <div class="col-md-8">
                 <div class="row">
-                    <div class="col text-center mb-5">
-                        <h4>Your Games</h4>
-                    </div>
-                    <div class="col">
-                        <button @click="showGameForm = true" class="btn neo">New Game</button>
-                    </div>
-                </div>
-                <div class="row">
-                    <div v-if="showGameForm" class="col text-center mb-5">
-                        <div class="input-group mb-3 neo">
-                            <div class="input-group-prepend input-group-append">
-                                <span class="input-group-text">Game Name:</span>
+                    <div class="col text-center mb-5 nes-container with-title">
+                        <p class="title">Your Games</p>
+                        <div class="row">
+                            <div v-if="showGameForm" class="col text-center mb-1">
+                                <div class="input-group mb-3 neo">
+                                    <div class="input-group-prepend input-group-append">
+                                        <span class="input-group-text">Game Name:</span>
+                                    </div>
+                                    <input v-model="gameName" type="text" class="form-control" id="basic-url" aria-describedby="Inout the game name.">
+                                </div>
+                                <div class="input-group d-flex justify-content-center mb-3">
+                                    <button @click="createGame" type="button" class="btn nes-btn is-success mr-2">Go</button>
+                                    <button @click="showGameForm = false" type="button" class="btn nes-btn is-error">Cancel</button>
+                                </div>
+                                <small>Person, place, thing - No one will see this</small>
+                            </div> 
+                            <div v-else class="col text-center mb-5">
+                                <ul id="gameList">  
+                                    <li v-for="game in games" :key="game.id" class="listItem neo">
+                                        <router-link :to="`/game/${game.id}`" tag="button" :class="gameStatusClass(game)" class="btn nes-btn btn-block mr-2">
+                                            <i v-if="game.status == 'solved'" class="nes-icon trophy is-small"></i> {{ game.name }}
+                                        </router-link>
+                                        <a @click="deleteGame(game)" class="btn nes-btn is-error text-white"><i class="fas fa-trash-alt"></i></a>
+                                    </li>   
+                                </ul>
+                                <div class="col">
+                                    <button @click="showGameForm = true" class="btn nes-btn is-primary">New Game</button>
+                                </div>
                             </div>
-                            <input v-model="gameName" type="text" class="form-control" id="basic-url" aria-describedby="Inout the game name.">
                         </div>
-                        <div class="input-group d-flex justify-content-center mb-3">
-                            <button @click="createGame" type="button" class="btn btn-outline-success mr-2">Go</button>
-                            <button @click="showGameForm = false" type="button" class="btn btn-outline-danger">Cancel</button>
-                        </div>
-                        <small>Person, place, thing - No one will see this</small>
-                    </div> 
-                    <div v-else class="col text-center mb-5">
-                        <ul id="gameList">  
-                            <li v-for="game in games" :key="game.id" class="listItem neo">
-                                <router-link :to="`/game/${game.id}`" tag="button" :class="gameStatusClass(game)" class="btn btn-block mr-2">
-                                    <i v-if="game.status == 'solved'" class="fas fa-star"></i> {{ game.name }}
-                                </router-link>
-                                <a @click="deleteGame(game)" class="btn btn-danger text-white"><i class="fas fa-trash-alt"></i></a>
-                            </li>   
-                        </ul>
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col text-center mb-5">
-                        <h4>Currently Playing</h4>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col text-center mb-5">
+                    <div class="col mb-5 nes-container with-title">
+                        <p class="title">Currently Playing</p>
                         <ul id="gameList">  
                             <li v-for="game in gamesPlaying" :key="game.id" class="listItem neo">
-                                <router-link :to="`/game/${game.id}`" tag="button" class="btn btn-block">
+                                <router-link :to="`/game/${game.id}`" tag="button" class="btn nes-btn btn-block">
                                     Started by {{ game.owner }} : {{ game.status }}
                                 </router-link>
                             </li>   
@@ -53,16 +49,10 @@
                 </div>
             </div>
             <div class="col-md-4">
-                <div class="row">
-                    <div class="col">
-                        <h4>Stats</h4>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col text-center">
-                        <p><strong>Games Played: </strong>{{ played }}</p>
-                        <p><strong>Total Points: </strong> {{ pointsTotal }} </p>
-                    </div>
+                <div class="nes-container with-title">
+                    <p class="title">Stats</p>
+                    <p>Games Played<br>{{ played }}</p>
+                    <p>Total Points<br><i class="nes-icon coin is-small mr-3"></i>{{ pointsTotal }}</p>
                 </div>
             </div>
         </div>
@@ -182,9 +172,9 @@ export default {
         },
         gameStatusClass(game) {
             return {
-                'btn-warning': game.status == 'solved',
-                'btn-outline-danger': game.status == 'lost',
-                'btn-outline-secondary': (game.status != 'solved' && game.status != 'lost')
+                'is-warning': game.status == 'solved',
+                'is-error': game.status == 'lost',
+                'none': (game.status != 'solved' && game.status != 'lost')
             }
         }
     },

@@ -18,7 +18,10 @@
                     </thead>
                     <tbody>
                         <tr v-for="(leader, index) in leaders" :key="leader.id">
-                            <th scope="row">#{{ index + 1 }}</th>
+                            <td scope="row">
+                                <i v-if="index == 0" class="nes-icon trophy is-small"></i>
+                                <span v-else>#</span><span>{{ index + 1 }}</span>
+                            </td>
                             <td>{{ leader.name }}</td>
                             <td>{{ leader.games }}</td>
                             <td>{{ leader.points }}</td>

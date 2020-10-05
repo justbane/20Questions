@@ -1,43 +1,49 @@
 <template>
     <div id="GameScene" class="container w-80">
-        <div class="row>">
-            <div class="title w-100 mb-5">
-                <!-- <h1>20 Questions</h1> -->
-                <h4>I'm thinking of something...</h4><p>You've got {{ count }} questions to figure it out!</p>
+        <!-- <div class="row">
+            <div class="nes-container is-rounded">
+                <p>I'm thinking of something...You've got {{ count }} questions to figure it out!</p>
             </div>
-        </div>
+        </div> -->
         <div v-if="id" class="row">
             <QuestionsAnswers :game="{gameData: game, gameId: id }" :count="count" @add-question="addQs" @game-solved="gameSolved" @end-game="endGame"></QuestionsAnswers>
             <div class="col-md-4 col-sm-12 stats">
-                <div class="w-100 h-100 p-3 neo">
-                    <div v-bind:class="countClass" class="btn btn-lg p-3 mb-5" style="font-size: 3em; line-height: 1em;">{{ count }}</div>
+                <div class="nes-container with-title">
+                    <p class="title">Questions</p>
+                    <div v-bind:class="countClass" class="nes-text p-0 mt-4 mb-3" style="font-size: 3em; line-height: 1em;"><i class="nes-icon coin is-medium"></i>{{ count }}</div>
                     <div v-if="game.status == 'solved'">
-                        <h4 class="mb-2">SOLVED!</h4>
+                        <h4 class="mb-3 nes-text is-success">SOLVED!</h4>
                         <img v-if="game.winnerPhoto" class="profileImg mr-2 mb-2" :src="game.winnerPhoto" />
-                        <h3>{{ game.winnerName }} WINS!!</h3>
+                        <p>{{ game.winnerName }} WINS!!</p>
                         <p> +{{ count + 1 }} points</p>
                     </div>
                     <div v-else-if="game.status == 'lost'">
-                        <h4 class="mb-2">GAME OVER</h4>
-                        <div class="" style="font-size: 100px;"><i class="far fa-sad-tear"></i></div>
+                        <h4 class="mb-3 nes-text is-error">GAME OVER</h4>
                         <h3>Nobody wins...</h3>
                         <p> +{{ count }} points</p>
                     </div>
-                    <h4 v-else >Questions remaining</h4>
-
-                    <div v-if="game.players > 0" class="mt-5">
-                        Currently playing: {{ game.players }}
+                    
+                </div>
+                <div class="w-100 h-100">
+                    <div class="mt-5 nes-container with-title">
+                        <p class="title">Players</p>
+                        <div class="players w-100 mh-100 overflow-auto">
+                            <ul class="list-group">
+                                <li class="list-group-item d-flex justify-content-start align-items-center border-0 p-1" v-for="player in game.players" :key="player.id">
+                                    <img v-if="player.profilePhoto != null" class="profileImg d-inline mr-2" :src="player.profilePhoto" /><small class="d-inline">{{ player.name }}</small>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
-
-                    <div class="mt-5">
-                        Share this game! 
+                    <div class="mt-5 nes-container with-title">
+                        <p class="title">Share</p>
                         <div class="input-group">
                             <input v-model="this.gameURL" class="form-control" />
-                            <div class="input-group-append">
-                                <button v-clipboard:copy="gameURL" class="btn btn-secondary"><i class="far fa-copy"></i></button>
+                            <div class="input-group-append mb-3">
+                                <button v-clipboard:copy="gameURL" class="btn nes-btn"><i class="far fa-copy"></i></button>
                             </div>
                         </div>
-                        <small class="d-block">Send this link to friends to play 20 questions.</small>
+                        <small class="d-block">Send this link to friends.</small>
                     </div>
                 </div>
             </div>
@@ -61,12 +67,11 @@ export default {
                 gameOwner: '',
                 gameOwnerId: null,
                 questions: [],
-                players: 0,
+                players: null,
                 status: null,
                 winnerName: null,
                 winnerId: null,
                 winnerPhoto: null
-
             }
         }
     },
@@ -83,9 +88,9 @@ export default {
         },
         countClass() {
             return {
-                'btn-outline-success': this.count >= 8,
-                'btn-outline-warning': this.count < 8 && this.count >= 5,
-                'btn-danger': this.count < 5
+                'is-success': this.count >= 8,
+                'is-warning': this.count < 8 && this.count >= 5,
+                'is-error': this.count < 5
             }
         },
         gameURL() {
@@ -136,6 +141,7 @@ export default {
         // Set player
         firebase.database().ref('players/' + this.id + '/' + this.$store.state.user.firebaseId).update({
             'name': this.$store.state.user.data.displayName,
+            'profilePhoto': this.$store.state.user.profilePhoto,
             'online': true
         }).then(() => {
             self.getPlayers();
@@ -154,7 +160,7 @@ export default {
         getPlayers() {
             var self = this;
             firebase.database().ref('players/' + this.id).orderByChild('online').equalTo(true).on('value', (snapshot) => {                
-                self.game.players = snapshot.numChildren();
+                self.game.players = snapshot.val();
             });
         },
         getQs() {
@@ -228,8 +234,12 @@ export default {
 <style lang="less" scoped>
     .stats {
         .profileImg {
-            max-width: 60px;
-            max-height: 60px;
+            max-width: 30px;
+            max-height: 30px;
+        }
+
+        .players {
+            height: 150px;
         }
     }
 </style>
