@@ -17,7 +17,7 @@
                                     <button @click="createGame" type="button" class="btn nes-btn is-success mr-2">Go</button>
                                     <button @click="showGameForm = false" type="button" class="btn nes-btn is-error">Cancel</button>
                                 </div>
-                                <small>Person, place, thing - No one will see this</small>
+                                <small>Give the game a name - BUT NOT THE ANSWER!</small>
                             </div> 
                             <div v-else class="col text-center mb-5">
                                 <ul id="gameList">  
@@ -41,7 +41,7 @@
                         <ul id="gameList">  
                             <li v-for="game in gamesPlaying" :key="game.id" class="listItem neo">
                                 <router-link :to="`/game/${game.id}`" tag="button" class="btn nes-btn btn-block">
-                                    Started by {{ game.owner }} : {{ game.status }}
+                                    {{ game.name }} : {{ game.status }}
                                 </router-link>
                             </li>   
                         </ul>
@@ -116,6 +116,7 @@ export default {
                                 if (snapshot.val()) {
                                     self.gamesPlaying.push({
                                         id: game.key,
+                                        name: snapshot.val().name,
                                         owner: snapshot.val().userName,
                                         status: (snapshot.val().status == 'solved') ? 'Solved' : 'Playing'
                                     });
