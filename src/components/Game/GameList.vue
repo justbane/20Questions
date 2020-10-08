@@ -11,7 +11,7 @@
                                     <div class="input-group-prepend input-group-append">
                                         <span class="input-group-text">Game Name:</span>
                                     </div>
-                                    <input v-model="gameName" type="text" class="form-control" id="basic-url" aria-describedby="Inout the game name.">
+                                    <input v-model="gameName" type="text" class="form-control" id="basic-url" aria-describedby="Input the game name.">
                                 </div>
                                 <div class="input-group d-flex justify-content-center mb-3">
                                     <button @click="createGame" type="button" class="btn nes-btn is-success mr-2">Go</button>
@@ -22,7 +22,7 @@
                             <div v-else class="col text-center mb-5">
                                 <ul id="gameList">  
                                     <li v-for="game in games" :key="game.id" class="listItem neo">
-                                        <router-link :to="`/game/${game.id}`" tag="button" :class="gameStatusClass(game)" class="btn nes-btn btn-block mr-2">
+                                        <router-link :to="`/game/${game.id}`" @click.native="playSound(sounds.gameStart)" tag="button" :class="gameStatusClass(game)" class="btn nes-btn btn-block mr-2">
                                             <i v-if="game.status == 'solved'" class="nes-icon trophy is-small"></i> {{ game.name }}
                                         </router-link>
                                         <a @click="deleteGame(game)" class="btn nes-btn is-error text-white"><i class="fas fa-trash-alt"></i></a>
@@ -40,7 +40,7 @@
                         <p class="title">Currently Playing</p>
                         <ul id="gameList">  
                             <li v-for="game in gamesPlaying" :key="game.id" class="listItem neo">
-                                <router-link :to="`/game/${game.id}`" tag="button" class="btn nes-btn btn-block">
+                                <router-link :to="`/game/${game.id}`" @click.native="playSound(sounds.gameStart)" tag="button" class="btn nes-btn btn-block">
                                     {{ game.name }} : {{ game.status }}
                                 </router-link>
                             </li>   
@@ -73,7 +73,10 @@ export default {
             showGameForm: false,
             gameName: '',
             played: 0,
-            pointsTotal: 0
+            pointsTotal: 0,
+            sounds: {
+                gameStart: './static/sounds/game-start.mp3'
+            }
         }
     },
     mounted() {
@@ -90,6 +93,12 @@ export default {
         });
     },
     methods: {
+        playSound(sound) {
+            if(sound) {
+                var audio = new Audio(sound);
+                audio.play();
+            }
+        },
         getGames() {
             var self = this;
             firebase.database().ref('games').orderByChild('userId').equalTo(this.$store.state.user.firebaseId).on('value', function(snapshot) {

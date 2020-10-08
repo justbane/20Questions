@@ -71,7 +71,14 @@ export default {
                 status: null,
                 winnerName: null,
                 winnerId: null,
-                winnerPhoto: null
+                winnerPhoto: null,
+                pendingQuestions: [],
+            },
+            sounds: {
+                questionYes: './static/sounds/question-yes.mp3',
+                questionNo: './static/sounds/question-no.mp3',
+                gameOverWin: './static/sounds/game-over-win.mp3',
+                gameOverLose: './static/sounds/game-over-lost.mp3'
             }
         }
     },
@@ -146,8 +153,15 @@ export default {
         }).then(() => {
             self.getPlayers();
         });
+
     },
     methods: {
+        playSound(sound) {
+            if(sound) {
+                var audio = new Audio(sound);
+                audio.play();
+            }
+        },
         getOwnerData() {
             var self = this;
             // Get the owner data
@@ -179,6 +193,31 @@ export default {
                         ownerName: question.val().ownerName,
                         ownerPhoto: question.val().ownerPhoto
                     });
+                    
+                    // check for answered questions in pending list
+                    if (self.game.pendingQuestions.includes(question.key)) {
+                        var index;
+                        switch (question.val().status) {
+                            case 'confirmed':
+                                self.playSound(self.sounds.questionYes);
+                                index = self.game.pendingQuestions.indexOf(question.key);
+                                self.game.pendingQuestions.splice(index, 1);
+                                break;
+                            
+                            case 'denied':
+                                self.playSound(self.sounds.questionNo);
+                                index = self.game.pendingQuestions.indexOf(question.key);
+                                self.game.pendingQuestions.splice(index, 1);
+                                break;
+
+                            default:
+                        }
+                    }
+
+                    // last (important) add to pending question list.
+                    if(question.val().status == 'asked' && !self.game.pendingQuestions.includes(question.key)) {
+                        self.game.pendingQuestions.push(question.key);
+                    }
                 });
             });
         },
@@ -219,12 +258,14 @@ export default {
                     games: games
                 });
             });
+            this.playSound(this.sounds.gameOverWin);
         },
         endGame(status) {
             // game update
             firebase.database().ref('games/' + this.id).update({
                 status: status
             });
+            this.playSound(this.sounds.gameOverLose);
         }
     }
 }

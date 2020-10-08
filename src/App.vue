@@ -1,7 +1,7 @@
 <template>
     <div id="main">
         <div class="nes-container with-title is-centered mb-5">   
-            <p class="title">20 Questions</p>     
+            <h2 class="title">20 Questions</h2>
             <nav class="navbar navbar-expand-lg p-1">
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -75,7 +75,7 @@ export default {
         text-align: center;
         //color: #2c3e50;
         margin:15px auto 0 auto;
-        max-width: 1024px;
+        max-width: 1280px;
 
         .navbar {
             box-shadow: none;

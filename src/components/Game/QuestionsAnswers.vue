@@ -25,8 +25,8 @@
                                         <p class="card-text mb-1 lead">{{ question.text }}</p>
                                     </div>
                                     <div v-else class="card-body p-2">
-                                        <h5 v-if="question.type == 'question' && question.status != 'solved'" class="card-title mb-1">Question</h5>
-                                        <h5 v-else class="card-title mb-1">SOLVED!</h5>
+                                        <p v-if="question.type == 'question' && question.status != 'solved'" class="card-title mb-1">Question</p>
+                                        <p v-else class="card-title mb-1">SOLVED!</p>
                                         <p v-if="question.type == 'question' && question.status == 'solved'" class="card-text"><img v-if="question.ownerPhoto != null" class="profileImg mr-2" :src="question.ownerPhoto" /><small class="font-weight-bold"><em>WINNER:</em> {{ question.ownerName }}</small></p>
                                         <p v-else class="card-text"><img v-if="question.ownerPhoto != null" class="profileImg mr-2" :src="question.ownerPhoto" /><small class="text-muted">Asked by {{ question.ownerName }}</small></p>
                                         <p class="card-text text lead">{{ question.text }}</p>
@@ -46,11 +46,11 @@
             </div>
         </div>
         <div class="input-group mb-3 w-100 neo">
-            <input v-model="questionText" v-on:keyup.enter="addChat" type="text" name="questionText" class="form-control" id="basic-url" aria-describedby="Inout the game name.">
+            <input v-model="questionText" v-on:keyup.enter="addChat" type="text" name="questionText" class="form-control" id="basic-url" aria-describedby="Input question text">
             <div class="input-group-append">
                 <button @click="addChat" type="button" class="btn nes-btn">Chat</button>
-                <button v-if="showQuestionButton" :disabled="waitToQuestion > 0" @click="addQuestion" type="button" class="btn nes-btn is-success">
-                    <span v-if="waitToQuestion > 0">Ask another question in {{waitToQuestion}}</span>
+                <button v-if="showQuestionButton" :disabled="game.gameData.pendingQuestions.length > 0" @click="addQuestion" type="button" class="btn nes-btn is-success">
+                    <span v-if="game.gameData.pendingQuestions.length > 0">Waiting for answer...</span>
                     <span v-else>Ask question</span>
                 </button>
             </div>
@@ -103,7 +103,6 @@ export default {
                 created: Date.now()
             }
             this.$emit('add-question', question);
-            this.startAnswerTimer();
             this.questionText = '';            
         },
         addChat() {
@@ -132,22 +131,6 @@ export default {
             }
             if(this.count < 1 && status != 'solved') {
                 this.$emit('end-game', 'lost');
-            }
-        },
-        startAnswerTimer() {
-            if (this.waitToQuestion == 0) {
-                this.waitToQuestion = 10;
-                setTimeout(() => {
-                    this.waitToQuestion -= 1;
-                    this.startAnswerTimer();
-                }, 1000);
-            } else {
-                setTimeout(() => {
-                    this.waitToQuestion -= 1;
-                    if (this.waitToQuestion > 0) {
-                        this.startAnswerTimer();
-                    }
-                }, 1000);
             }
         }
     },
