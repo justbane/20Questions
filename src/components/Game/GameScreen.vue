@@ -1,10 +1,10 @@
 <template>
     <div id="GameScene" class="container w-80">
-        <!-- <div class="row">
-            <div class="nes-container is-rounded">
-                <p>I'm thinking of something...You've got {{ count }} questions to figure it out!</p>
+        <div class="row">
+            <div class="nes-balloon from-left">
+                <p><img class="d-inline" style="max-width: 30px;" :src="game.players[game.gameOwnerId].profilePhoto" /> {{ gameName }}</p>
             </div>
-        </div> -->
+        </div>
         <div v-if="id" class="row">
             <QuestionsAnswers :game="{gameData: game, gameId: id }" :count="count" @add-question="addQs" @game-solved="gameSolved" @end-game="endGame"></QuestionsAnswers>
             <div class="col-md-4 col-sm-12 stats">
@@ -144,6 +144,12 @@ export default {
                 self.getOwnerData();
                 self.getQs();
             }
+            if (snapshot.val().status == 'solved') {
+                self.playSound(self.sounds.gameOverWin);
+            }
+            if (snapshot.val().status == 'lost') {
+                self.playSound(self.sounds.gameOverLose);
+            }
         });
         // Set player
         firebase.database().ref('players/' + this.id + '/' + this.$store.state.user.firebaseId).update({
@@ -173,7 +179,8 @@ export default {
         },
         getPlayers() {
             var self = this;
-            firebase.database().ref('players/' + this.id).orderByChild('online').equalTo(true).on('value', (snapshot) => {                
+            firebase.database().ref('players/' + this.id).orderByChild('online').equalTo(true).on('value', (snapshot) => {      
+                self.game.players = null;
                 self.game.players = snapshot.val();
             });
         },
@@ -258,14 +265,12 @@ export default {
                     games: games
                 });
             });
-            this.playSound(this.sounds.gameOverWin);
         },
         endGame(status) {
             // game update
             firebase.database().ref('games/' + this.id).update({
                 status: status
             });
-            this.playSound(this.sounds.gameOverLose);
         }
     }
 }

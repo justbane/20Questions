@@ -1,6 +1,6 @@
 <template>
     <div id="main">
-        <div class="nes-container with-title is-centered mb-5">   
+        <div class="nes-container with-title is-centered mb-3">   
             <h2 class="title">20 Questions</h2>
             <nav class="navbar navbar-expand-lg p-1">
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -14,7 +14,7 @@
                         <!-- <li class="nav-item">
                             <router-link to="/lobby" tag="a" active-class="active" exact class="flex-sm-fill text-sm-center nav-link">Lobby</router-link>
                         </li> -->
-                        <li class="nav-item">
+                        <li class="nav-item mr-3">
                             <router-link to="/games" tag="button" active-class="is-primary" exact class="pt-1 pb-1 flex-sm-fill text-sm-center nav-link nes-btn">Your Games</router-link>
                         </li> 
                         <li class="nav-item">
