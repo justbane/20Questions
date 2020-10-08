@@ -17,7 +17,7 @@
                                     <button @click="createGame" type="button" class="btn nes-btn is-success mr-2">Go</button>
                                     <button @click="showGameForm = false" type="button" class="btn nes-btn is-error">Cancel</button>
                                 </div>
-                                <small>Give the game a name, or pose a question... BUT NOT THE ANSWER!</small>
+                                <small>Give the game a name, or pose a question...<br>BUT NOT THE ANSWER!</small>
                             </div> 
                             <div v-else class="col text-center mb-5">
                                 <ul id="gameList">  
