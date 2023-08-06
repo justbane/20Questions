@@ -22,7 +22,7 @@
                         </li>
                     </ul>
                     <div v-if="user.loggedIn">
-                        <button @click="logout" class="btn">Logout {{ user.data.email }}</button>
+                        <button @click="logout" class="btn">Logout {{ user.data.displayName }}</button>
                     </div>
                 </div>
             </nav>

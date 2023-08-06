@@ -31,7 +31,7 @@ firebase.auth().onAuthStateChanged(user => {
     store.dispatch('fetchUser', user);
     // Check a user on login
     try {
-        firebase.database().ref('users').orderByChild('email').equalTo(user.email).once("value", function (snapshot) {            
+        firebase.database().ref('users').orderByChild('email').equalTo(user.email).once("value", function (snapshot) {
             if (snapshot.val() == null) {
                 // create a user
                 var newUser = firebase.database().ref('users/' + user.uid).set({
@@ -58,7 +58,6 @@ firebase.auth().onAuthStateChanged(user => {
         router.replace(route).catch(() => {
             console.log("Caught navigation duplication"); 
         });
-    
     }
 });
 

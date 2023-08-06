@@ -144,9 +144,7 @@ export default {
                 self.getOwnerData();
                 self.getQs();
             }
-            if (snapshot.val().status == 'solved') {
-                self.playSound(self.sounds.gameOverWin);
-            }
+            
             if (snapshot.val().status == 'lost') {
                 self.playSound(self.sounds.gameOverLose);
             }
@@ -249,6 +247,9 @@ export default {
                 winnerName: question.ownerName,
                 winnerPhoto: question.ownerPhoto,
             });
+            //  Play winner sound
+            self.playSound(self.sounds.gameOverWin);
+
             // leaders update
             firebase.database().ref('leaderboard/' + question.ownerId).once('value').then((snapshot) => {
                 var points = 0;

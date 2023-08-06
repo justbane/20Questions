@@ -41,7 +41,7 @@ export default new Vuex.Store({
             commit("SET_LOGGED_IN", user !== null);
             if (user) {
                 commit("SET_USER", {
-                    displayName: user.displayName,
+                    displayName: user.displayName ?? ('Player-' + user.uid.substring(0, 5)),
                     email: user.email
                 });
             } else {
